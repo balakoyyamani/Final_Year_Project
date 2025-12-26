@@ -4,7 +4,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class WeatherService {
     public String fetchWeather(double lat, double lon) {
-        String apiKey = "YOUR_API_KEY"; //Weather API key
+        String apiKey = "0adce9aed614237918b984341abb46d9"; //Weather API key
 
         String url = "https://api.openweathermap.org/data/2.5/weather"
                 + "?lat=" + lat
