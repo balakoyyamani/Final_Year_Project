@@ -26,7 +26,7 @@ public class WeatherService {
 
         String locationName = getLocationName(lat, lon);
 
-        String apiKey = "0adce9aed614237918b984341abb46d9"; //YOUR_OPENWEATHER_API_KEY
+        String apiKey = "0adce9aed614237918b984341abb46d9";  //YOUR_OPENWEATHER_API_KEY
 
         String weatherUrl =
                 "https://api.openweathermap.org/data/2.5/weather"
