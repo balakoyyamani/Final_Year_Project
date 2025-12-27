@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class WeatherService {
 
+    // ===== USER PROVIDED LOCATION (SET ONCE) =====
     private Double userLat;
     private Double userLon;
 
@@ -26,30 +27,49 @@ public class WeatherService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // Called once from controller
+    // ==============================
+    // 1️⃣ SET USER LOCATION (CALLED ONCE)
+    // ==============================
     public void setUserLocation(double lat, double lon) {
         this.userLat = lat;
         this.userLon = lon;
-        System.out.println("User location set: " + lat + ", " + lon);
+        System.out.println("📍 Virtual sensor started at: " + lat + ", " + lon);
     }
 
-    // Runs automatically every 30 seconds
-    @Scheduled(fixedRate = 30000)
+    // ==============================
+    // 2️⃣ AUTO FETCH EVERY 30 SECONDS
+    // ==============================
+    @Scheduled(fixedRate = 30000) // 30 seconds
     public void autoFetchWeather() throws Exception {
 
         if (userLat == null || userLon == null) {
-            return;
+            return; // user not set yet
         }
 
         fetchAndStoreWeather(userLat, userLon);
-        System.out.println("Weather data fetched automatically");
+        System.out.println("⏱ Weather data fetched automatically");
     }
 
-    // Core logic: reverse geocoding + weather + DB save
+    // ==============================
+    // 3️⃣ MAIN LOGIC (API + DB)
+    // ==============================
     public void fetchAndStoreWeather(double lat, double lon) throws Exception {
 
+        // ---- Reverse Geocoding (Location Name) ----
         String locationName = getLocationName(lat, lon);
 
+        // ---- Prevent Duplicate Location Insert ----
+        SensorLocation location = locationRepo
+                .findByLatitudeAndLongitude(lat, lon)
+                .orElseGet(() -> {
+                    SensorLocation newLocation = new SensorLocation();
+                    newLocation.setLatitude(lat);
+                    newLocation.setLongitude(lon);
+                    newLocation.setLocationName(locationName);
+                    return locationRepo.save(newLocation);
+                });
+
+        // ---- Weather API Call ----
         String apiKey = "0adce9aed614237918b984341abb46d9"; //YOUR_OPENWEATHER_API_KEY
 
         String weatherUrl =
@@ -62,12 +82,7 @@ public class WeatherService {
         String weatherJson = restTemplate.getForObject(weatherUrl, String.class);
         JsonNode root = mapper.readTree(weatherJson);
 
-        SensorLocation location = new SensorLocation();
-        location.setLatitude(lat);
-        location.setLongitude(lon);
-        location.setLocationName(locationName);
-        locationRepo.save(location);
-
+        // ---- Store Raw Sensor Data ----
         RawEnvironmentData data = new RawEnvironmentData();
         data.setTemperature(root.path("main").path("temp").asDouble());
         data.setHumidity(root.path("main").path("humidity").asInt());
@@ -79,7 +94,9 @@ public class WeatherService {
         dataRepo.save(data);
     }
 
-    // Reverse geocoding (FREE – OpenStreetMap)
+    // ==============================
+    // 4️⃣ REVERSE GEOCODING (FREE API)
+    // ==============================
     private String getLocationName(double lat, double lon) throws Exception {
 
         String url =
