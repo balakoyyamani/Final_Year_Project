@@ -11,13 +11,21 @@ public class SensorController {
     @Autowired
     private WeatherService weatherService;
 
-    // User provides latitude & longitude ONCE
+    // START SENSOR
     @PostMapping("/start")
-    public String startVirtualSensor(
+    public String startSensor(
             @RequestParam double lat,
             @RequestParam double lon) {
 
-        weatherService.setUserLocation(lat, lon);
-        return "Virtual sensor started. Data will be fetched every 30 seconds.";
+        weatherService.startSensor(lat, lon);
+        return "🟢 Virtual sensor started";
+    }
+
+    // STOP SENSOR
+    @PostMapping("/stop")
+    public String stopSensor() {
+
+        weatherService.stopSensor();
+        return "🔴 Virtual sensor stopped";
     }
 }

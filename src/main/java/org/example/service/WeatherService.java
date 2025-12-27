@@ -14,9 +14,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class WeatherService {
 
-    // ===== USER PROVIDED LOCATION (SET ONCE) =====
+    // ===== USER LOCATION =====
     private Double userLat;
     private Double userLon;
+
+    // ===== SENSOR CONTROL FLAG =====
+    private boolean sensorRunning = false;
 
     @Autowired
     private SensorLocationRepository locationRepo;
@@ -28,49 +31,56 @@ public class WeatherService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     // ==============================
-    // 1️⃣ SET USER LOCATION (CALLED ONCE)
+    // START SENSOR (called from controller)
     // ==============================
-    public void setUserLocation(double lat, double lon) {
+    public void startSensor(double lat, double lon) {
         this.userLat = lat;
         this.userLon = lon;
-        System.out.println("📍 Virtual sensor started at: " + lat + ", " + lon);
+        this.sensorRunning = true;
+
+        System.out.println("🟢 Sensor STARTED at: " + lat + ", " + lon);
     }
 
     // ==============================
-    // 2️⃣ AUTO FETCH EVERY 30 SECONDS
+    // STOP SENSOR
     // ==============================
-    @Scheduled(fixedRate = 30000) // 30 seconds
+    public void stopSensor() {
+        this.sensorRunning = false;
+        System.out.println("🔴 Sensor STOPPED");
+    }
+
+    // ==============================
+    // AUTO FETCH EVERY 30 SECONDS
+    // ==============================
+    @Scheduled(fixedRate = 30000)
     public void autoFetchWeather() throws Exception {
 
-        if (userLat == null || userLon == null) {
-            return; // user not set yet
+        if (!sensorRunning || userLat == null || userLon == null) {
+            return;
         }
 
         fetchAndStoreWeather(userLat, userLon);
-        System.out.println("⏱ Weather data fetched automatically");
+        System.out.println("⏱ Data fetched automatically");
     }
 
     // ==============================
-    // 3️⃣ MAIN LOGIC (API + DB)
+    // CORE LOGIC
     // ==============================
     public void fetchAndStoreWeather(double lat, double lon) throws Exception {
 
-        // ---- Reverse Geocoding (Location Name) ----
         String locationName = getLocationName(lat, lon);
 
-        // ---- Prevent Duplicate Location Insert ----
         SensorLocation location = locationRepo
                 .findByLatitudeAndLongitude(lat, lon)
                 .orElseGet(() -> {
-                    SensorLocation newLocation = new SensorLocation();
-                    newLocation.setLatitude(lat);
-                    newLocation.setLongitude(lon);
-                    newLocation.setLocationName(locationName);
-                    return locationRepo.save(newLocation);
+                    SensorLocation newLoc = new SensorLocation();
+                    newLoc.setLatitude(lat);
+                    newLoc.setLongitude(lon);
+                    newLoc.setLocationName(locationName);
+                    return locationRepo.save(newLoc);
                 });
 
-        // ---- Weather API Call ----
-        String apiKey = "0adce9aed614237918b984341abb46d9"; //YOUR_OPENWEATHER_API_KEY
+        String apiKey = "0adce9aed614237918b984341abb46d9";  //YOUR_OPENWEATHER_API_KEY
 
         String weatherUrl =
                 "https://api.openweathermap.org/data/2.5/weather"
@@ -82,7 +92,6 @@ public class WeatherService {
         String weatherJson = restTemplate.getForObject(weatherUrl, String.class);
         JsonNode root = mapper.readTree(weatherJson);
 
-        // ---- Store Raw Sensor Data ----
         RawEnvironmentData data = new RawEnvironmentData();
         data.setTemperature(root.path("main").path("temp").asDouble());
         data.setHumidity(root.path("main").path("humidity").asInt());
@@ -95,7 +104,7 @@ public class WeatherService {
     }
 
     // ==============================
-    // 4️⃣ REVERSE GEOCODING (FREE API)
+    // REVERSE GEOCODING
     // ==============================
     private String getLocationName(double lat, double lon) throws Exception {
 
