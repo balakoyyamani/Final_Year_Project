@@ -23,8 +23,6 @@ public class RawEnvironmentData {
     @JoinColumn(name = "location_id")
     private SensorLocation location;
 
-    // ===== GETTERS & SETTERS =====
-
     public int getDataId() {
         return dataId;
     }
@@ -75,10 +73,6 @@ public class RawEnvironmentData {
 
     public LocalDateTime getRecordedAt() {
         return recordedAt;
-    }
-
-    public void setRecordedAt(LocalDateTime recordedAt) {
-        this.recordedAt = recordedAt;
     }
 
     public SensorLocation getLocation() {

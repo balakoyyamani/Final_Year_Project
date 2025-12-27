@@ -19,29 +19,29 @@ public class WeatherService {
     @Autowired
     private RawEnvironmentDataRepository dataRepo;
 
-    public void fetchAndStoreWeather() throws Exception {
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-        double lat = 13.0827;
-        double lon = 80.2707;
+    public void fetchAndStoreWeather(double lat, double lon) throws Exception {
 
-        String apiKey = "0adce9aed614237918b984341abb46d9"; //API_KEY
+        String locationName = getLocationName(lat, lon);
 
-        String url = "https://api.openweathermap.org/data/2.5/weather"
-                + "?lat=" + lat
-                + "&lon=" + lon
-                + "&units=metric"
-                + "&appid=" + apiKey;
+        String apiKey = "0adce9aed614237918b984341abb46d9"; //YOUR_OPENWEATHER_API_KEY
 
-        RestTemplate restTemplate = new RestTemplate();
-        String json = restTemplate.getForObject(url, String.class);
+        String weatherUrl =
+                "https://api.openweathermap.org/data/2.5/weather"
+                        + "?lat=" + lat
+                        + "&lon=" + lon
+                        + "&units=metric"
+                        + "&appid=" + apiKey;
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(json);
+        String weatherJson = restTemplate.getForObject(weatherUrl, String.class);
+        JsonNode root = mapper.readTree(weatherJson);
 
         SensorLocation location = new SensorLocation();
         location.setLatitude(lat);
         location.setLongitude(lon);
-        location.setLocationName("Default Chennai Location");
+        location.setLocationName(locationName);
         locationRepo.save(location);
 
         RawEnvironmentData data = new RawEnvironmentData();
@@ -53,7 +53,19 @@ public class WeatherService {
         data.setLocation(location);
 
         dataRepo.save(data);
+    }
 
-        System.out.println("✅ Weather data stored successfully");
+    private String getLocationName(double lat, double lon) throws Exception {
+
+        String url =
+                "https://nominatim.openstreetmap.org/reverse"
+                        + "?format=json"
+                        + "&lat=" + lat
+                        + "&lon=" + lon;
+
+        String response = restTemplate.getForObject(url, String.class);
+        JsonNode root = mapper.readTree(response);
+
+        return root.path("display_name").asText("Unknown Location");
     }
 }

@@ -14,8 +14,6 @@ public class SensorLocation {
     private double longitude;
     private String locationName;
 
-    // ===== GETTERS & SETTERS =====
-
     public int getLocationId() {
         return locationId;
     }
