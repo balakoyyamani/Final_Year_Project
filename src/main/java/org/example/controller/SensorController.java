@@ -11,16 +11,13 @@ public class SensorController {
     @Autowired
     private WeatherService weatherService;
 
-    @GetMapping("/fetch")
-    public String fetchSensorData(
+    // User provides latitude & longitude ONCE
+    @PostMapping("/start")
+    public String startVirtualSensor(
             @RequestParam double lat,
             @RequestParam double lon) {
 
-        try {
-            weatherService.fetchAndStoreWeather(lat, lon);
-            return "Sensor data fetched and stored successfully";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
+        weatherService.setUserLocation(lat, lon);
+        return "Virtual sensor started. Data will be fetched every 30 seconds.";
     }
 }

@@ -7,11 +7,15 @@ import org.example.model.SensorLocation;
 import org.example.repository.RawEnvironmentDataRepository;
 import org.example.repository.SensorLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class WeatherService {
+
+    private Double userLat;
+    private Double userLon;
 
     @Autowired
     private SensorLocationRepository locationRepo;
@@ -22,11 +26,31 @@ public class WeatherService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
+    // Called once from controller
+    public void setUserLocation(double lat, double lon) {
+        this.userLat = lat;
+        this.userLon = lon;
+        System.out.println("User location set: " + lat + ", " + lon);
+    }
+
+    // Runs automatically every 30 seconds
+    @Scheduled(fixedRate = 30000)
+    public void autoFetchWeather() throws Exception {
+
+        if (userLat == null || userLon == null) {
+            return;
+        }
+
+        fetchAndStoreWeather(userLat, userLon);
+        System.out.println("Weather data fetched automatically");
+    }
+
+    // Core logic: reverse geocoding + weather + DB save
     public void fetchAndStoreWeather(double lat, double lon) throws Exception {
 
         String locationName = getLocationName(lat, lon);
 
-        String apiKey = "0adce9aed614237918b984341abb46d9";  //YOUR_OPENWEATHER_API_KEY
+        String apiKey = "0adce9aed614237918b984341abb46d9"; //YOUR_OPENWEATHER_API_KEY
 
         String weatherUrl =
                 "https://api.openweathermap.org/data/2.5/weather"
@@ -55,6 +79,7 @@ public class WeatherService {
         dataRepo.save(data);
     }
 
+    // Reverse geocoding (FREE – OpenStreetMap)
     private String getLocationName(double lat, double lon) throws Exception {
 
         String url =
