@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Virtual Sensor Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Virtual Sensor Processing Pipeline</h1>
+
+<div class="tabs">
+    <button onclick="show('raw')">Raw Data</button>
+    <button onclick="show('clean')">Cleaned</button>
+    <button onclick="show('pre')">Preprocessed</button>
+    <button onclick="show('cal')">Calibrated</button>
+    <button onclick="show('alert')">Alerts</button>
+</div>
+
+<div id="raw" class="panel">
+    <h2>Raw Sensor Data</h2>
+    <table>
+        <tr><th>Time</th><th>Temp</th><th>Humidity</th><th>Pressure</th></tr>
+        <tr><td>09:00</td><td>31.5</td><td>65</td><td>1012</td></tr>
+        <tr><td>09:10</td><td>32.0</td><td>67</td><td>1011</td></tr>
+    </table>
+</div>
+
+<div id="clean" class="panel">
+    <h2>Cleaned Data</h2>
+    <p>Out-of-range and noise values removed</p>
+    <table>
+        <tr><th>Time</th><th>Temp</th><th>Status</th></tr>
+        <tr><td>09:00</td><td>31.5</td><td class="ok">Valid</td></tr>
+    </table>
+</div>
+
+<div id="pre" class="panel">
+    <h2>Preprocessed Data</h2>
+    <p>Moving average smoothing applied</p>
+    <table>
+        <tr><th>Time</th><th>Smoothed Temp</th></tr>
+        <tr><td>09:10</td><td>32.33</td></tr>
+    </table>
+</div>
+
+<div id="cal" class="panel">
+    <h2>Calibrated Data</h2>
+    <table>
+        <tr><th>Time</th><th>Raw Temp</th><th>Calibrated Temp</th></tr>
+        <tr><td>10:40</td><td>40.8</td><td>39.84</td></tr>
+    </table>
+</div>
+
+<div id="alert" class="panel">
+    <h2>Generated Alerts</h2>
+    <table>
+        <tr><th>Time</th><th>Alert Type</th><th>Confidence</th></tr>
+        <tr class="alert"><td>10:40</td><td>Storm Risk</td><td>66%</td></tr>
+    </table>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

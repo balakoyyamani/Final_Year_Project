@@ -1,0 +1,52 @@
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.tabs {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    background: #2c7be5;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1a5dcc;
+}
+
+.panel {
+    display: none;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.ok {
+    color: green;
+}
+
+.alert {
+    background: #ffe5e5;
+}
