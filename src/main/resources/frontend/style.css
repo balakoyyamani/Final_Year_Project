@@ -1,6 +1,6 @@
 body {
-    font-family: Arial;
-    background: #f4f6f9;
+    font-family: Arial, sans-serif;
+    background: #f2f5f9;
     padding: 20px;
 }
 
@@ -8,29 +8,30 @@ h1 {
     text-align: center;
 }
 
-.tabs {
+.sensor-tabs {
     text-align: center;
     margin-bottom: 20px;
 }
 
 button {
-    padding: 10px 15px;
     margin: 5px;
+    padding: 8px 14px;
     border: none;
-    background: #2c7be5;
+    background: #2563eb;
     color: white;
     cursor: pointer;
+    border-radius: 4px;
 }
 
 button:hover {
-    background: #1a5dcc;
+    background: #1e40af;
 }
 
 .panel {
     display: none;
     background: white;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
 table {
@@ -39,14 +40,20 @@ table {
 }
 
 th, td {
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     padding: 8px;
+    text-align: center;
 }
 
-.ok {
-    color: green;
+th {
+    background: #e5e7eb;
 }
 
-.alert {
-    background: #ffe5e5;
+.calc {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f9fafb;
+    border-left: 4px solid #2563eb;
+    font-size: 14px;
 }

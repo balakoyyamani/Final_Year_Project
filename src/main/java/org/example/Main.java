@@ -17,10 +17,11 @@ public class Main {
         raw.forEach(System.out::println);
 
         List<EnvironmentData> clean = DataCleaner.clean(raw);
+        Preprocessor.preprocess(clean);
 
-        Preprocessor.smoothTemperature(clean);
-
-        clean.forEach(Calibrator::calibrate);
+        for (EnvironmentData d : clean) {
+            Calibrator.calibrate(d);
+        }
 
         System.out.println("\nCALIBRATED DATA");
         clean.forEach(System.out::println);

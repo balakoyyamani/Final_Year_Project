@@ -6,57 +6,99 @@
 </head>
 <body>
 
-<h1>Virtual Sensor Processing Pipeline</h1>
+<h1>Virtual Sensor Processing Dashboard</h1>
 
-<div class="tabs">
-    <button onclick="show('raw')">Raw Data</button>
-    <button onclick="show('clean')">Cleaned</button>
-    <button onclick="show('pre')">Preprocessed</button>
-    <button onclick="show('cal')">Calibrated</button>
-    <button onclick="show('alert')">Alerts</button>
+<div class="sensor-tabs">
+    <button onclick="show('temp')">Temperature</button>
+    <button onclick="show('hum')">Humidity</button>
+    <button onclick="show('pres')">Pressure</button>
+    <button onclick="show('wind')">Wind Speed</button>
+    <button onclick="show('rain')">Rainfall</button>
 </div>
 
-<div id="raw" class="panel">
-    <h2>Raw Sensor Data</h2>
+<!-- 🌡 TEMPERATURE -->
+<div id="temp" class="panel">
+    <h2>🌡 Temperature (°C)</h2>
     <table>
-        <tr><th>Time</th><th>Temp</th><th>Humidity</th><th>Pressure</th></tr>
-        <tr><td>09:00</td><td>31.5</td><td>65</td><td>1012</td></tr>
-        <tr><td>09:10</td><td>32.0</td><td>67</td><td>1011</td></tr>
+        <tr><th>Stage</th><th>Value</th><th>Unit</th><th>Details</th></tr>
+        <tr><td>Raw</td><td>40.8</td><td>°C</td><td><button onclick="toggle('t1')">View</button></td></tr>
+        <tr><td>Cleaned</td><td>40.8</td><td>°C</td><td><button onclick="toggle('t2')">View</button></td></tr>
+        <tr><td>Preprocessed</td><td>40.2</td><td>°C</td><td><button onclick="toggle('t3')">View</button></td></tr>
+        <tr><td>Calibrated</td><td>39.8</td><td>°C</td><td><button onclick="toggle('t4')">View</button></td></tr>
     </table>
+
+    <div id="t1" class="calc">Raw value taken directly from dataset.</div>
+    <div id="t2" class="calc">Range check applied (−10°C to 60°C).</div>
+    <div id="t3" class="calc">(39.5 + 40.8 + 41.6) / 3 = 40.2°C</div>
+    <div id="t4" class="calc">40.2 − 0.5 (bias) − 0.3 (humidity &gt; 90%) = <b>39.8°C</b></div>
 </div>
 
-<div id="clean" class="panel">
-    <h2>Cleaned Data</h2>
-    <p>Out-of-range and noise values removed</p>
+<!-- 💧 HUMIDITY -->
+<div id="hum" class="panel">
+    <h2>💧 Humidity (%)</h2>
     <table>
-        <tr><th>Time</th><th>Temp</th><th>Status</th></tr>
-        <tr><td>09:00</td><td>31.5</td><td class="ok">Valid</td></tr>
+        <tr><th>Stage</th><th>Value</th><th>Unit</th><th>Details</th></tr>
+        <tr><td>Raw</td><td>95</td><td>%</td><td><button onclick="toggle('h1')">View</button></td></tr>
+        <tr><td>Cleaned</td><td>95</td><td>%</td><td><button onclick="toggle('h2')">View</button></td></tr>
+        <tr><td>Preprocessed</td><td>93</td><td>%</td><td><button onclick="toggle('h3')">View</button></td></tr>
+        <tr><td>Calibrated</td><td>93</td><td>%</td><td><button onclick="toggle('h4')">View</button></td></tr>
     </table>
+
+    <div id="h1" class="calc">Raw humidity from dataset.</div>
+    <div id="h2" class="calc">Validated between 0% and 100%.</div>
+    <div id="h3" class="calc">Moving average smoothing applied.</div>
+    <div id="h4" class="calc">Clamped to physical saturation limit.</div>
 </div>
 
-<div id="pre" class="panel">
-    <h2>Preprocessed Data</h2>
-    <p>Moving average smoothing applied</p>
+<!-- 🌡 PRESSURE -->
+<div id="pres" class="panel">
+    <h2>🌡 Air Pressure (hPa)</h2>
     <table>
-        <tr><th>Time</th><th>Smoothed Temp</th></tr>
-        <tr><td>09:10</td><td>32.33</td></tr>
+        <tr><th>Stage</th><th>Value</th><th>Unit</th><th>Details</th></tr>
+        <tr><td>Raw</td><td>995</td><td>hPa</td><td><button onclick="toggle('p1')">View</button></td></tr>
+        <tr><td>Cleaned</td><td>995</td><td>hPa</td><td><button onclick="toggle('p2')">View</button></td></tr>
+        <tr><td>Preprocessed</td><td>997</td><td>hPa</td><td><button onclick="toggle('p3')">View</button></td></tr>
+        <tr><td>Calibrated</td><td>1001</td><td>hPa</td><td><button onclick="toggle('p4')">View</button></td></tr>
     </table>
+
+    <div id="p1" class="calc">Raw atmospheric pressure.</div>
+    <div id="p2" class="calc">Range validated (900–1100 hPa).</div>
+    <div id="p3" class="calc">Noise reduced using smoothing.</div>
+    <div id="p4" class="calc">Sea-level normalization using altitude correction.</div>
 </div>
 
-<div id="cal" class="panel">
-    <h2>Calibrated Data</h2>
+<!-- 🌬 WIND -->
+<div id="wind" class="panel">
+    <h2>🌬 Wind Speed (m/s)</h2>
     <table>
-        <tr><th>Time</th><th>Raw Temp</th><th>Calibrated Temp</th></tr>
-        <tr><td>10:40</td><td>40.8</td><td>39.84</td></tr>
+        <tr><th>Stage</th><th>Value</th><th>Unit</th><th>Details</th></tr>
+        <tr><td>Raw</td><td>11.2</td><td>m/s</td><td><button onclick="toggle('w1')">View</button></td></tr>
+        <tr><td>Cleaned</td><td>11.2</td><td>m/s</td><td><button onclick="toggle('w2')">View</button></td></tr>
+        <tr><td>Preprocessed</td><td>10.5</td><td>m/s</td><td><button onclick="toggle('w3')">View</button></td></tr>
+        <tr><td>Calibrated</td><td>10.5</td><td>m/s</td><td><button onclick="toggle('w4')">View</button></td></tr>
     </table>
+
+    <div id="w1" class="calc">Raw wind speed value.</div>
+    <div id="w2" class="calc">Negative and extreme values removed.</div>
+    <div id="w3" class="calc">Rolling average applied.</div>
+    <div id="w4" class="calc">Speed limited to remove spikes.</div>
 </div>
 
-<div id="alert" class="panel">
-    <h2>Generated Alerts</h2>
+<!-- 🌧 RAIN -->
+<div id="rain" class="panel">
+    <h2>🌧 Rainfall (mm)</h2>
     <table>
-        <tr><th>Time</th><th>Alert Type</th><th>Confidence</th></tr>
-        <tr class="alert"><td>10:40</td><td>Storm Risk</td><td>66%</td></tr>
+        <tr><th>Stage</th><th>Value</th><th>Unit</th><th>Details</th></tr>
+        <tr><td>Raw</td><td>0.1</td><td>mm</td><td><button onclick="toggle('r1')">View</button></td></tr>
+        <tr><td>Cleaned</td><td>0.1</td><td>mm</td><td><button onclick="toggle('r2')">View</button></td></tr>
+        <tr><td>Preprocessed</td><td>0.1</td><td>mm</td><td><button onclick="toggle('r3')">View</button></td></tr>
+        <tr><td>Calibrated</td><td>0.0</td><td>mm</td><td><button onclick="toggle('r4')">View</button></td></tr>
     </table>
+
+    <div id="r1" class="calc">Raw rainfall from dataset.</div>
+    <div id="r2" class="calc">Negative values removed.</div>
+    <div id="r3" class="calc">No smoothing applied.</div>
+    <div id="r4" class="calc">Below 0.2 mm → treated as noise.</div>
 </div>
 
 <script src="script.js"></script>
