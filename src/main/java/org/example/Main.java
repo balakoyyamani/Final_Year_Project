@@ -16,8 +16,12 @@ public class Main {
 
         try {
             // 1️⃣ Read RAW data from CSV
-            List<EnvironmentData> rawData =
-                    CsvReader.read("src/main/resources/environment.csv");
+            String dataset = "out_of_range";
+
+            String csvPath = "src/main/resources/" + dataset + ".csv";
+
+            List<EnvironmentData> rawData = CsvReader.read(csvPath);
+
 
             System.out.println("RAW DATA");
             rawData.forEach(System.out::println);
