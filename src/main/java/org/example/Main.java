@@ -1,32 +1,51 @@
 package org.example;
 
 import org.example.model.EnvironmentData;
-import org.example.service.*;
+import org.example.service.AlertEngine;
+import org.example.service.CalibratedDataRepository;
+import org.example.service.Calibrator;
+import org.example.service.DataCleaner;
+import org.example.service.Preprocessor;
 import org.example.util.CsvReader;
 
-import java.util.*;
+import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        List<EnvironmentData> raw =
-                CsvReader.read("src/main/resources/environment.csv");
+        try {
+            // 1️⃣ Read RAW data from CSV
+            List<EnvironmentData> rawData =
+                    CsvReader.read("src/main/resources/environment.csv");
 
-        System.out.println("RAW DATA");
-        raw.forEach(System.out::println);
+            System.out.println("RAW DATA");
+            rawData.forEach(System.out::println);
 
-        List<EnvironmentData> clean = DataCleaner.clean(raw);
-        Preprocessor.preprocess(clean);
+            // 2️⃣ Clean data
+            List<EnvironmentData> cleanData =
+                    DataCleaner.clean(rawData);
 
-        for (EnvironmentData d : clean) {
-            Calibrator.calibrate(d);
+            // 3️⃣ Preprocess (smoothing)
+            Preprocessor.smoothTemperature(cleanData);
+
+            // 4️⃣ Calibrate + Store into MySQL
+            System.out.println("\nCALIBRATED DATA (STORED IN DB)");
+            for (EnvironmentData d : cleanData) {
+                Calibrator.calibrate(d);
+                CalibratedDataRepository.save(d);
+                System.out.println(d);
+            }
+
+            // 5️⃣ Alert detection
+            System.out.println("\nALERTS");
+            AlertEngine.detect(cleanData);
+
+            System.out.println("\nPROCESS COMPLETED SUCCESSFULLY");
+
+        } catch (Exception e) {
+            System.out.println("ERROR OCCURRED");
+            e.printStackTrace();
         }
-
-        System.out.println("\nCALIBRATED DATA");
-        clean.forEach(System.out::println);
-
-        System.out.println("\nALERTS");
-        AlertEngine.detect(clean);
     }
 }
