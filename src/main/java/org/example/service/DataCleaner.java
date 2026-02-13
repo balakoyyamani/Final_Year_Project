@@ -11,10 +11,10 @@ public class DataCleaner {
 
         for (EnvironmentData d : data) {
 
-            if (d.temperature < -10 || d.temperature > 60) continue;
+            if (d.temperature < -89 || d.temperature > 60) continue;
             if (d.humidity < 0 || d.humidity > 100) continue;
             if (d.pressure < 900 || d.pressure > 1100) continue;
-            if (d.windSpeed < 0 || d.windSpeed > 60) continue;
+            if (d.windSpeed < 0 || d.windSpeed > 80) continue;
             if (d.rainfall < 0) continue;
 
             cleaned.add(d);
