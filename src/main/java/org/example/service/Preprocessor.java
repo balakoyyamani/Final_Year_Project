@@ -1,7 +1,7 @@
 package org.example.service;
 
 import org.example.model.EnvironmentData;
-import java.util.List;
+import java.util.*;
 
 public class Preprocessor {
 
@@ -10,12 +10,12 @@ public class Preprocessor {
         for (int i = 1; i < data.size() - 1; i++) {
 
             double avg = (
-                    data.get(i - 1).temperature +
-                            data.get(i).temperature +
-                            data.get(i + 1).temperature
+                    data.get(i - 1).getTemperature() +
+                            data.get(i).getTemperature() +
+                            data.get(i + 1).getTemperature()
             ) / 3.0;
 
-            data.get(i).temperature = avg;
+            data.get(i).setTemperature(avg);
         }
     }
 }

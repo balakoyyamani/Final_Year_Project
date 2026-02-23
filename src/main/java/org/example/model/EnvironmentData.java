@@ -4,29 +4,45 @@ import java.time.LocalDateTime;
 
 public class EnvironmentData {
 
-    public LocalDateTime time;
-    public double temperature;
-    public double humidity;
-    public double pressure;
-    public double windSpeed;
-    public double rainfall;
+    private LocalDateTime timestamp;
+    private double temperature;
+    private double humidity;
+    private double windSpeed;
+    private double pressure;
+    private double rainfall;
 
-    public EnvironmentData(LocalDateTime time, double temperature, double humidity,
-                           double pressure, double windSpeed, double rainfall) {
-        this.time = time;
+    public EnvironmentData(LocalDateTime timestamp,
+                           double temperature,
+                           double humidity,
+                           double windSpeed,
+                           double pressure,
+                           double rainfall) {
+        this.timestamp = timestamp;
         this.temperature = temperature;
         this.humidity = humidity;
-        this.pressure = pressure;
         this.windSpeed = windSpeed;
+        this.pressure = pressure;
         this.rainfall = rainfall;
+    }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public double getTemperature() { return temperature; }
+    public double getHumidity() { return humidity; }
+    public double getWindSpeed() { return windSpeed; }
+    public double getPressure() { return pressure; }
+    public double getRainfall() { return rainfall; }
+
+    public void setTemperature(double temperature) {
+        this.temperature = temperature;
     }
 
     @Override
     public String toString() {
-        return time + " | T=" + temperature +
+        return timestamp +
+                " | T=" + temperature +
                 " H=" + humidity +
-                " P=" + pressure +
                 " W=" + windSpeed +
+                " P=" + pressure +
                 " R=" + rainfall;
     }
 }

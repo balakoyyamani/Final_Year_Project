@@ -1,11 +1,7 @@
 package org.example;
-//version 4
+
 import org.example.model.EnvironmentData;
-import org.example.service.AlertEngine;
-import org.example.service.CalibratedDataRepository;
-import org.example.service.Calibrator;
-import org.example.service.DataCleaner;
-import org.example.service.Preprocessor;
+import org.example.service.*;
 import org.example.util.CsvReader;
 
 import java.util.List;
@@ -15,40 +11,49 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            // 1️⃣ Read RAW data from CSV
-            String dataset = "environment";
+
+            // 1️⃣ Select dataset
+            //String dataset = "environment";
+            String dataset = "fire_risk";
             //String dataset = "out_of_range";
 
             String csvPath = "src/main/resources/" + dataset + ".csv";
 
+            // 2️⃣ Read RAW data
             List<EnvironmentData> rawData = CsvReader.read(csvPath);
 
-
-            System.out.println("RAW DATA");
+            System.out.println("========== RAW DATA ==========");
             rawData.forEach(System.out::println);
 
-            // 2️⃣ Clean data
+            // 3️⃣ Clean data
             List<EnvironmentData> cleanData =
                     DataCleaner.clean(rawData);
 
-            // 3️⃣ Preprocess (smoothing)
+            System.out.println("\n========== CLEANED DATA ==========");
+
+            // 4️⃣ Preprocess (Smoothing)
             Preprocessor.smoothTemperature(cleanData);
 
-            // 4️⃣ Calibrate + Store into MySQL
-            System.out.println("\nCALIBRATED DATA (STORED IN DB)");
+            // 5️⃣ Calibrate + Store in DB
+            System.out.println("\n========== CALIBRATED DATA (Stored in DB) ==========");
+
             for (EnvironmentData d : cleanData) {
+
                 Calibrator.calibrate(d);
+
                 CalibratedDataRepository.save(d);
+
                 System.out.println(d);
             }
 
-            // 5️⃣ Alert detection
-            System.out.println("\nALERTS");
+            // 6️⃣ Run Isolation Forest + Alert Engine
+            System.out.println("\n========== ALERT ENGINE ==========");
             AlertEngine.detect(cleanData);
 
             System.out.println("\nPROCESS COMPLETED SUCCESSFULLY");
 
         } catch (Exception e) {
+
             System.out.println("ERROR OCCURRED");
             e.printStackTrace();
         }

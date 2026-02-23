@@ -3,33 +3,25 @@ package org.example.service;
 import org.example.model.EnvironmentData;
 import org.example.util.DatabaseUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
 
 public class CalibratedDataRepository {
 
-    public static void save(EnvironmentData d) {
+    public static void save(EnvironmentData d) throws Exception {
 
-        String sql = """
-            INSERT INTO calibrated_data
-            (time, temperature, humidity, pressure, windSpeed, rainfall)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """;
+        Connection con = DatabaseUtil.getConnection();
 
-        try (Connection con = DatabaseUtil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO calibrated_data (time, temperature, humidity, pressure, windSpeed, rainfall) VALUES (?,?,?,?,?,?)");
 
-            ps.setString(1, d.time.toString());
-            ps.setDouble(2, d.temperature);
-            ps.setDouble(3, d.humidity);
-            ps.setDouble(4, d.pressure);
-            ps.setDouble(5, d.windSpeed);
-            ps.setDouble(6, d.rainfall);
+        ps.setString(1, d.getTimestamp().toString());
+        ps.setDouble(2, d.getTemperature());
+        ps.setDouble(3, d.getHumidity());
+        ps.setDouble(4, d.getPressure());
+        ps.setDouble(5, d.getWindSpeed());
+        ps.setDouble(6, d.getRainfall());
 
-            ps.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ps.executeUpdate();
+        con.close();
     }
 }

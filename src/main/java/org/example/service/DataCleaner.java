@@ -11,14 +11,15 @@ public class DataCleaner {
 
         for (EnvironmentData d : data) {
 
-            if (d.temperature < -89 || d.temperature > 60) continue;
-            if (d.humidity < 0 || d.humidity > 100) continue;
-            if (d.pressure < 900 || d.pressure > 1100) continue;
-            if (d.windSpeed < 0 || d.windSpeed > 80) continue;
-            if (d.rainfall < 0) continue;
+            if (d.getTemperature() < -89 || d.getTemperature() > 60) continue;
+            if (d.getHumidity() < 0 || d.getHumidity() > 100) continue;
+            if (d.getPressure() < 900 || d.getPressure() > 1100) continue;
+            if (d.getWindSpeed() < 0 || d.getWindSpeed() > 80) continue;
+            if (d.getRainfall() < 0) continue;
 
             cleaned.add(d);
         }
+
         return cleaned;
     }
 }
