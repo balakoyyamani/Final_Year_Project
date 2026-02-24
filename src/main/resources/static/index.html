@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Forest Monitoring Dashboard</title>
+    <title>Forest Control Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>🌳 Forest Environmental Monitoring</h1>
+    <h1>🌳 Forest Environmental Control Panel</h1>
 
-    <div class="button-container">
-        <button onclick="showTable('cleaning')">Data Cleaning</button>
-        <button onclick="showTable('preprocessing')">Data Preprocessing</button>
-        <button onclick="showTable('calibration')">Data Calibration</button>
+    <div class="buttons">
+        <button onclick="loadData('cleaned')">Cleaning</button>
+        <button onclick="loadData('preprocessed')">Preprocessing</button>
+        <button onclick="loadData('calibrated')">Calibration</button>
+    </div>
+
+    <div id="statusBox" class="statusBox">
+        STATUS: NORMAL
+    </div>
+
+    <div id="meter">
+        <div id="meterFill"></div>
     </div>
 
     <div id="tableContainer"></div>
