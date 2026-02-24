@@ -3,31 +3,68 @@
 <head>
     <title>Forest Control Dashboard</title>
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>🌳 Forest Environmental Control Panel</h1>
+    <h1><i class="fa-solid fa-tree"></i> Forest Environmental Control Center</h1>
 
-    <div class="buttons">
-        <button onclick="loadData('cleaned')">Cleaning</button>
-        <button onclick="loadData('preprocessed')">Preprocessing</button>
-        <button onclick="loadData('calibrated')">Calibration</button>
+    <div class="controls">
+
+        <button onclick="loadData('cleaned')">
+            <i class="fa-solid fa-broom"></i> Cleaning
+        </button>
+
+        <button onclick="loadData('preprocessed')">
+            <i class="fa-solid fa-filter"></i> Preprocessing
+        </button>
+
+        <button onclick="loadData('calibrated')">
+            <i class="fa-solid fa-sliders"></i> Calibration
+        </button>
+
+        <button onclick="exportCalibratedCSV()">
+            <i class="fa-solid fa-database"></i> Export Calibrated
+        </button>
+
+        <button onclick="exportAnomaliesCSV()">
+            <i class="fa-solid fa-file-csv"></i> Export Anomalies
+        </button>
+
+        <button onclick="toggleDemo()">
+            <i class="fa-solid fa-play"></i> Demo Mode
+        </button>
+
     </div>
 
-    <div id="statusBox" class="statusBox">
-        STATUS: NORMAL
+    <div id="statusBox">
+        <i class="fa-solid fa-shield"></i> STATUS: NORMAL
     </div>
 
     <div id="meter">
         <div id="meterFill"></div>
     </div>
 
+    <div id="anomalyCount">
+        <i class="fa-solid fa-triangle-exclamation"></i> Anomalies: 0
+    </div>
+
+    <canvas id="barChart"></canvas>
+
     <div id="tableContainer"></div>
+
+    <h2><i class="fa-solid fa-bell"></i> Alert History</h2>
+    <div id="alertHistory"></div>
 
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
