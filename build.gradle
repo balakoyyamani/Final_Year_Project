@@ -25,6 +25,23 @@ dependencies {
     implementation 'com.github.haifengl:smile-core:2.6.0'
     implementation 'com.github.haifengl:smile-core:3.0.1'
     implementation 'mysql:mysql-connector-java:8.0.33'
+    implementation 'com.sparkjava:spark-core:2.9.4'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.sparkjava:spark-core:2.9.4'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    implementation 'com.sparkjava:spark-core:2.9.4'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
+    // Jetty modules (required for Spark)
+    implementation 'org.eclipse.jetty:jetty-server:9.4.51.v20230217'
+    implementation 'org.eclipse.jetty:jetty-servlet:9.4.51.v20230217'
+    implementation 'org.eclipse.jetty:jetty-util:9.4.51.v20230217'
+    implementation 'org.eclipse.jetty:jetty-http:9.4.51.v20230217'
+    implementation 'org.eclipse.jetty:jetty-io:9.4.51.v20230217'
+    implementation 'org.eclipse.jetty:jetty-server:9.4.51.v20230217'
+    implementation 'org.eclipse.jetty:jetty-servlet:9.4.51.v20230217'
 
 }
 

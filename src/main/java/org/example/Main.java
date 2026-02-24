@@ -3,6 +3,8 @@ package org.example;
 import org.example.model.EnvironmentData;
 import org.example.service.*;
 import org.example.util.CsvReader;
+import org.example.server.ApiServer;
+
 
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+        ApiServer.start();
         try {
 
             // 1️⃣ Select dataset

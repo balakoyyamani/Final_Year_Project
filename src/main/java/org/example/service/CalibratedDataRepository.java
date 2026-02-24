@@ -12,9 +12,10 @@ public class CalibratedDataRepository {
         Connection con = DatabaseUtil.getConnection();
 
         PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO calibrated_data (time, temperature, humidity, pressure, windSpeed, rainfall) VALUES (?,?,?,?,?,?)");
+                "INSERT INTO calibrated_data (time, temperature, humidity, pressure, windSpeed, rainfall) VALUES (?,?,?,?,?,?)"
+        );
 
-        ps.setString(1, d.getTimestamp().toString());
+        ps.setTimestamp(1, Timestamp.valueOf(d.getTimestamp()));
         ps.setDouble(2, d.getTemperature());
         ps.setDouble(3, d.getHumidity());
         ps.setDouble(4, d.getPressure());
