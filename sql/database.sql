@@ -12,3 +12,14 @@ CREATE TABLE calibrated_data (
     rainfall DOUBLE
 );
 
+DROP TABLE calibrated_data;
+
+CREATE TABLE calibrated_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    time DATETIME,
+    temperature DOUBLE,
+    humidity DOUBLE,
+    pressure DOUBLE,
+    windSpeed DOUBLE,
+    rainfall DOUBLE
+);
