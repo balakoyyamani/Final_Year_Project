@@ -16,9 +16,9 @@ public class Main {
         try {
 
             // 1️⃣ Select dataset
-            //String dataset = "environment";
-            String dataset = "fire_risk";
-            //String dataset = "out_of_range";
+            String dataset = "environment";
+           //String dataset = "fire_risk";
+           //String dataset = "out_of_range";
 
             String csvPath = "src/main/resources/" + dataset + ".csv";
 
@@ -35,7 +35,11 @@ public class Main {
             System.out.println("\n========== CLEANED DATA ==========");
 
             // 4️⃣ Preprocess (Smoothing)
-            Preprocessor.smoothTemperature(cleanData);
+           // Preprocessor.smoothTemperature(cleanData);
+            Preprocessor.smoothAllSensors(cleanData);
+
+            // Clear old data before inserting new
+            CalibratedDataRepository.clearTable();
 
             // 5️⃣ Calibrate + Store in DB
             System.out.println("\n========== CALIBRATED DATA (Stored in DB) ==========");

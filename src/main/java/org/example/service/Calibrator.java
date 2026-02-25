@@ -36,6 +36,10 @@ public class Calibrator {
 
         // SET back (you need setters for all OR modify model)
         d.setTemperature(temp);
+        d.setHumidity(humidity);
+        d.setPressure(pressure);
+        d.setWindSpeed(wind);
+        d.setRainfall(rain);
     }
 
     private static double round(double v) {

@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Forest Control Dashboard</title>
+
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,6 +17,10 @@
     <h1><i class="fa-solid fa-tree"></i> Forest Environmental Control Center</h1>
 
     <div class="controls">
+
+        <button onclick="loadData('raw')">
+            <i class="fa-solid fa-file-lines"></i> Raw Data
+        </button>
 
         <button onclick="loadData('cleaned')">
             <i class="fa-solid fa-broom"></i> Cleaning

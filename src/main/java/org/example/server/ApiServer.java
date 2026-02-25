@@ -3,16 +3,15 @@ package org.example.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.example.model.EnvironmentData;
-import org.example.util.DatabaseUtil;
+import org.example.service.Calibrator;
 import org.example.service.DataCleaner;
 import org.example.service.Preprocessor;
+import org.example.service.IsolationForestService;
+import org.example.util.CsvReader;
 
-import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static spark.Spark.*;
 
@@ -21,6 +20,7 @@ public class ApiServer {
     public static void start() {
 
         port(8080);
+
         before((req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Methods", "*");
@@ -36,82 +36,90 @@ public class ApiServer {
                                         ))
                 .create();
 
+        /* ---------------- RAW ---------------- */
+
+        get("/raw", (req, res) -> {
+            res.type("application/json");
+            return gson.toJson(getRawData());
+        });
+
+        /* ---------------- CLEANED ---------------- */
+
         get("/cleaned", (req, res) -> {
             res.type("application/json");
-            return gson.toJson(getCleanedData());
+
+            List<EnvironmentData> raw = getRawData();
+            List<EnvironmentData> cleaned = DataCleaner.clean(raw);
+
+            return gson.toJson(cleaned);
         });
+
+        /* ---------------- PREPROCESSED ---------------- */
 
         get("/preprocessed", (req, res) -> {
             res.type("application/json");
-            return gson.toJson(getPreprocessedData());
+
+            List<EnvironmentData> raw = getRawData();
+            List<EnvironmentData> cleaned = DataCleaner.clean(raw);
+
+           // Preprocessor.smoothTemperature(cleaned);
+            Preprocessor.smoothAllSensors(cleaned);
+
+            return gson.toJson(cleaned);
         });
+
+        /* ---------------- CALIBRATED + SCORED ---------------- */
 
         get("/calibrated", (req, res) -> {
             res.type("application/json");
-            return gson.toJson(getDataWithScores());
+
+            List<EnvironmentData> raw = getRawData();
+            List<EnvironmentData> cleaned = DataCleaner.clean(raw);
+
+            //Preprocessor.smoothTemperature(cleaned);
+            Preprocessor.smoothAllSensors(cleaned);
+
+            for (EnvironmentData d : cleaned) {
+                Calibrator.calibrate(d);
+            }
+
+            IsolationForestService ml = new IsolationForestService();
+            ml.train(cleaned);
+
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (EnvironmentData d : cleaned) {
+
+                Map<String, Object> row = new HashMap<>();
+
+                row.put("timestamp", d.getTimestamp());
+                row.put("temperature", d.getTemperature());
+                row.put("humidity", d.getHumidity());
+                row.put("windSpeed", d.getWindSpeed());
+                row.put("pressure", d.getPressure());
+                row.put("rainfall", d.getRainfall());
+
+                double score = ml.score(d);
+                row.put("score", score);
+
+                result.add(row);
+            }
+
+            return gson.toJson(result);
         });
+
+        System.out.println("API running at http://localhost:8080");
     }
 
-    private static List<EnvironmentData> getData() throws Exception {
+    /* ---------------- READ RAW FROM CSV ---------------- */
 
-        List<EnvironmentData> list = new ArrayList<>();
+    private static List<EnvironmentData> getRawData() throws Exception {
 
-        Connection con = DatabaseUtil.getConnection();
-        Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM calibrated_data");
+        String dataset = "environment";
+        // String dataset = "fire_risk";
+        //String dataset = "out_of_range";
+        String path = "src/main/resources/" + dataset + ".csv";
 
-        while (rs.next()) {
-            list.add(new EnvironmentData(
-                    rs.getTimestamp("time").toLocalDateTime(),
-                    rs.getDouble("temperature"),
-                    rs.getDouble("humidity"),
-                    rs.getDouble("windSpeed"),
-                    rs.getDouble("pressure"),
-                    rs.getDouble("rainfall")
-            ));
-        }
-
-        con.close();
-        return list;
-    }
-    private static List<Map<String, Object>> getDataWithScores() throws Exception {
-
-        List<EnvironmentData> raw = getData();
-        List<Map<String, Object>> result = new ArrayList<>();
-
-        org.example.service.IsolationForestService ml =
-                new org.example.service.IsolationForestService();
-
-        ml.train(raw);
-
-        for (EnvironmentData d : raw) {
-
-            Map<String, Object> row = new java.util.HashMap<>();
-
-            row.put("timestamp", d.getTimestamp());
-            row.put("temperature", d.getTemperature());
-            row.put("humidity", d.getHumidity());
-            row.put("windSpeed", d.getWindSpeed());
-            row.put("pressure", d.getPressure());
-            row.put("rainfall", d.getRainfall());
-
-            double score = ml.score(d);
-            row.put("score", score);
-
-            result.add(row);
-        }
-
-        return result;
-    }
-
-    private static List<EnvironmentData> getCleanedData() throws Exception {
-        List<EnvironmentData> raw = getData();
-        return DataCleaner.clean(raw);
-    }
-
-    private static List<EnvironmentData> getPreprocessedData() throws Exception {
-        List<EnvironmentData> raw = getData();
-        Preprocessor.smoothTemperature(raw);
-        return raw;
+        return CsvReader.read(path);
     }
 }

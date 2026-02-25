@@ -30,7 +30,7 @@ body {
 #statusBox {
     margin: 15px auto;
     padding: 10px;
-    width: 300px;
+    width: 320px;
     border-radius: 6px;
     background: green;
     font-weight: bold;
@@ -85,4 +85,16 @@ th, td {
 
 #alertHistory {
     margin-top: 10px;
+}
+
+/* Flashing animation */
+
+@keyframes flashRed {
+    0% { background-color: red; }
+    50% { background-color: darkred; }
+    100% { background-color: red; }
+}
+
+.alert-flash {
+    animation: flashRed 0.8s infinite;
 }

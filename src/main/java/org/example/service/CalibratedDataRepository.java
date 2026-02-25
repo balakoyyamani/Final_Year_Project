@@ -7,6 +7,18 @@ import java.sql.*;
 
 public class CalibratedDataRepository {
 
+    public static void clearTable() throws Exception {
+
+        Connection con = DatabaseUtil.getConnection();
+
+        Statement st = con.createStatement();
+
+        // Delete all rows + reset auto increment
+        st.executeUpdate("TRUNCATE TABLE calibrated_data");
+
+        con.close();
+    }
+
     public static void save(EnvironmentData d) throws Exception {
 
         Connection con = DatabaseUtil.getConnection();

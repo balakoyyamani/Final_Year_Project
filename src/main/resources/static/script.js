@@ -5,8 +5,9 @@ let demoMode = false;
 let fullData = [];
 let currentIndex = 0;
 let animationInterval;
+let alarmPlaying = false;
 
-/* ---------- LOAD DATA ---------- */
+/* LOAD DATA */
 
 async function loadData(stage) {
 
@@ -23,7 +24,7 @@ async function loadData(stage) {
     startGraphAnimation();
 }
 
-/* ---------- GRAPH ANIMATION ---------- */
+/* GRAPH ANIMATION */
 
 function startGraphAnimation() {
 
@@ -48,7 +49,7 @@ function startGraphAnimation() {
     }, 2000);
 }
 
-/* ---------- BAR CHART ---------- */
+/* BAR CHART */
 
 function updateChart(data) {
 
@@ -90,7 +91,7 @@ function updateChart(data) {
     });
 }
 
-/* ---------- TABLE ---------- */
+/* TABLE */
 
 function renderTable(data) {
 
@@ -125,7 +126,7 @@ function renderTable(data) {
     document.getElementById("tableContainer").innerHTML = html;
 }
 
-/* ---------- STATUS ---------- */
+/* STATUS + ALERT */
 
 function updateStatus(data) {
 
@@ -153,8 +154,13 @@ function updateStatus(data) {
         statusBox.innerHTML =
             `<i class="fa-solid fa-fire"></i> STATUS: HIGH RISK`;
 
-        statusBox.style.background = "red";
+        statusBox.classList.add("alert-flash");
         meterFill.style.background = "red";
+
+        if (!alarmPlaying) {
+            playAlarm();
+            alarmPlaying = true;
+        }
 
         const time = new Date().toLocaleTimeString();
         alertHistory.push("🔥 Fire Risk at " + time);
@@ -165,12 +171,15 @@ function updateStatus(data) {
         statusBox.innerHTML =
             `<i class="fa-solid fa-shield"></i> STATUS: NORMAL`;
 
+        statusBox.classList.remove("alert-flash");
         statusBox.style.background = "green";
         meterFill.style.background = "green";
+
+        alarmPlaying = false;
     }
 }
 
-/* ---------- ALERT HISTORY ---------- */
+/* ALERT HISTORY */
 
 function updateHistory() {
 
@@ -185,7 +194,29 @@ function updateHistory() {
     document.getElementById("alertHistory").innerHTML = html;
 }
 
-/* ---------- EXPORT FUNCTIONS ---------- */
+/* ALARM SOUND */
+
+function playAlarm() {
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = "sawtooth";
+    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+
+    oscillator.start();
+
+    setTimeout(() => {
+        oscillator.stop();
+        audioCtx.close();
+    }, 1000);
+}
+
+/* EXPORT CALIBRATED */
 
 async function exportCalibratedCSV() {
 
@@ -200,6 +231,8 @@ async function exportCalibratedCSV() {
 
     downloadCSV(csv, "calibrated_data.csv");
 }
+
+/* EXPORT ANOMALIES */
 
 async function exportAnomaliesCSV() {
 
@@ -232,7 +265,7 @@ function downloadCSV(content, filename) {
     link.click();
 }
 
-/* ---------- DEMO MODE ---------- */
+/* DEMO MODE */
 
 function toggleDemo() {
 
@@ -240,7 +273,6 @@ function toggleDemo() {
 
     if (demoMode) {
 
-        alert("Demo Mode Activated");
         clearInterval(animationInterval);
 
         animationInterval = setInterval(() => {

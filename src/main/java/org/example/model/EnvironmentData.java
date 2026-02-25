@@ -35,6 +35,21 @@ public class EnvironmentData {
     public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
+    public void setHumidity(double humidity) {
+        this.humidity = humidity;
+    }
+
+    public void setPressure(double pressure) {
+        this.pressure = pressure;
+    }
+
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
+    public void setRainfall(double rainfall) {
+        this.rainfall = rainfall;
+    }
 
     @Override
     public String toString() {
